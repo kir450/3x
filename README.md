@@ -36,11 +36,15 @@ rm /etc/apt/sources.list.d/ookla_speedtest-cli.list
 
 или
 apt install python3-venv
+
 python3 -m venv venv
+
 source venv/bin/activate
+
 pip install speedtest-cli
 
 speedtest-cli
+
 deactivate
 
 
