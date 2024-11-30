@@ -1,15 +1,56 @@
-3x
-
-ssh root@192.168.80.50
-
 htop -  список запущенных процессов
 
-reboot
 
-#do-release-upgrade
+3x
+
+useradd -m xxxui -G sudo -s /bin/bash
+
+paswd xxxui 
+
+0UyFjipC8<!5#A=
+
+sudo -l
+(ALL : ALL) ALL
+
+exit, su root(с паролем root), sudo -i (с парлем user)
+
+ls -la
+
+mkdir .ssh
+cd .ssh
+nano authorized_keys
+chmod 600 authorized_keys
+
+Закрвтие доступа по паролю root
+nano /etc/ssh/sshd_config
+PermitRootLogin no
+PasswordAuthentication no
+PermitEmptyPasswords no
+
+Проверить: ls /etc/ssh/sshd_config.d/
+
+systemctl restart sshd
+если ругается то
+systemctl restart ssh
+
+bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+
+54637
+
+useradd -r -m rtunnel -s /bin/true
+
+sudo -u rtunnel mkdir /home/rtunnel/.ssh
+
+
+cd /home/rtunnel/.ssh
+
+touch authorized_keys
+
+chown rtunnel: authorized_keys
+
+chmod 600 authorized_keys
 
 sudo nano /etc/ssh/sshd_config
-
 Port 10022
 
 sudo systemctl daemon-reload
