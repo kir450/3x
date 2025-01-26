@@ -7,7 +7,6 @@ useradd -m xxxui -G sudo -s /bin/bash
 
 paswd xxxui 
 
-0UyFjipC8<!5#A=
 
 sudo -l
 (ALL : ALL) ALL
