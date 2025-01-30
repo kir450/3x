@@ -1,15 +1,3 @@
-# Обновление списка пакетов и установка необходимых утилит
-sudo apt update
-sudo apt install -y git curl openssl systemd
-
-# Удаление предыдущей версии скрипта (если существует)
-rm -rf ~/3x
-
-# Клонирование репозитория
-git clone https://github.com/kir450/3x.git
-
-# Переход в директорию скрипта
-cd 3x
 
 # Предоставление прав на выполнение скрипта
 chmod +x ui.sh
@@ -17,145 +5,64 @@ chmod +x ui.sh
 # Запуск скрипта от имени суперпользователя
 sudo ./ui.sh
 
+# Создание нового пользователя (замените "новый_пользователь" на желаемое имя)
+adduser новый_пользователь
 
+# Добавление пользователя в группу sudo (опционально, для предоставления админ-доступа)
+usermod -aG sudo новый_пользователь
 
+# Переключение на нового пользователя
+su - новый_пользователь
 
+# Создание директории для хранения SSH-ключей
+mkdir -p ~/.ssh
 
+# Открытие файла для добавления публичного ключа
+nano ~/.ssh/authorized_keys
 
+# (Вставьте сюда содержимое публичного ключа из PuTTYgen и сохраните файл)
 
+# Установка корректных прав доступа к директории и файлу ключей
+chmod 700 ~/.ssh
+chmod 600 ~/.ssh/authorized_keys
 
+# Переключение обратно на root (если необходимо)
+exit
 
-
-
-
-
-
-
-
-
-
-
-
-htop -  список запущенных процессов
-
-
-3x
-
-useradd -m xxxui -G sudo -s /bin/bash
-
-paswd xxxui 
-
-
-sudo -l
-(ALL : ALL) ALL
-
-exit, su root(с паролем root), sudo -i (с парлем user)
-
-ls -la
-
-mkdir .ssh
-cd .ssh
-nano authorized_keys
-chmod 600 authorized_keys
-
-Закрвтие доступа по паролю root
+# Открытие конфигурационного файла SSH для редактирования
 nano /etc/ssh/sshd_config
-PermitRootLogin no
-PasswordAuthentication no
-PermitEmptyPasswords no
 
-Проверить: ls /etc/ssh/sshd_config.d/
+# (Найдите строку "PermitRootLogin yes" и замените её на "PermitRootLogin no"), (При необходимости измените "PasswordAuthentication yes" на "PasswordAuthentication no")
 
+# Перезапуск службы SSH для применения изменений
 systemctl restart sshd
-если ругается то
-systemctl restart ssh
 
-bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
+# Установка UFW
+sudo apt update
+sudo apt install ufw
+sudo ufw allow ssh
+sudo ufw allow <ваш_порт>/tcp
 
-54637
+sudo nano /etc/ufw/before.rules
 
-useradd -r -m rtunnel -s /bin/true
-
-sudo -u rtunnel mkdir /home/rtunnel/.ssh
-
-
-cd /home/rtunnel/.ssh
-
-touch authorized_keys
-
-chown rtunnel: authorized_keys
-
-chmod 600 authorized_keys
-
-sudo nano /etc/ssh/sshd_config
-Port 10022
-
-sudo systemctl daemon-reload
-
-sudo systemctl restart ssh
-
-ss -ntpl
-
-sudo ufw enable && ufw allow 10022/tcp
-
-ufw status numbered
-
-nano /etc/ufw/before.rules
-
-# ok icmp codes for INPUT
+# Блокировка ICMP-запросов для предотвращения двустороннего пинга
+ok icmp codes for INPUT
 -A ufw-before-input -p icmp --icmp-type destination-unreachable -j DROP
 -A ufw-before-input -p icmp --icmp-type time-exceeded -j DROP
 -A ufw-before-input -p icmp --icmp-type parameter-problem -j DROP
 -A ufw-before-input -p icmp --icmp-type echo-request -j DROP
 -A ufw-before-input -p icmp --icmp-type source-quench -j DROP
 
-# ok icmp code for FORWARD
+ok icmp code for FORWARD
 -A ufw-before-forward -p icmp --icmp-type destination-unreachable -j DROP
 -A ufw-before-forward -p icmp --icmp-type time-exceeded -j DROP
 -A ufw-before-forward -p icmp --icmp-type parameter-problem -j DROP
 -A ufw-before-forward -p icmp --icmp-type echo-request -j DROP
 
-ufw disable && ufw enable
+sudo ufw enable
 
-sudo apt-get install curl
+# Проверить статус UFW
+sudo ufw status verbose
 
-curl -s https://packagecloud.io/install/repositories/ookla/speedtest-cli/script.deb.sh | sudo bash
-
-sudo apt-get install speedtest
-
-grep -r 'ookla' /etc/apt/
-
-rm /etc/apt/keyrings/ookla_speedtest-cli-archive-keyring.gpg
-
-rm /etc/apt/sources.list.d/ookla_speedtest-cli.list
-
-или
-
-apt install python3-venv
-
-python3 -m venv venv
-
-source venv/bin/activate
-
-pip install speedtest-cli
-
-speedtest-cli
-
-deactivate
-
-
-bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
-
-ufw allow 6555/tcp
-
-ufw allow 443/tcp
-
-SSH-тунель для адинки 3x-ui
-
-ss -ntpl
-
-LISTEN 0      4096       127.0.0.1:6555         0.0.0.0:*     users:(("x-ui",pid=941,fd=3))
-
-MobaXterm-Tunneling-New SSH tunnel
-
-
+#  Вход под другим root:
+su root(с паролем root), sudo -i (с парлем user)
